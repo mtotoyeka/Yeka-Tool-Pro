@@ -1,1 +1,881 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeka Tool Pro - Admin Control Center</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+<header class="site-header">
+    <div class="container nav-container">
+        <a href="index.html" class="logo">YEKA <span>TOOL PRO</span></a>
+
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="admin.html" class="active">Admin</a>
+            <button id="logoutBtn" class="btn btn-danger">Logout</button>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- ADMIN HEADER -->
+    <section class="hero admin-hero">
+        <div>
+            <span class="badge">ADMIN ACCESS</span>
+            <h1>ADMIN CONTROL CENTER</h1>
+            <p>
+                <strong>Yekah Tech Admin</strong><br>
+                Manage users, credits, vouchers, resellers and service availability.
+            </p>
+        </div>
+    </section>
+
+    <!-- ADMIN STATUS -->
+    <section class="section">
+        <div class="section-title">
+            <h2>System Overview</h2>
+            <p>Live information from your Firestore database.</p>
+        </div>
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+                <span>Total Users</span>
+                <strong id="totalUsers">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Active Users</span>
+                <strong id="activeUsers">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Total Credits</span>
+                <strong id="totalCredits">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Active Licenses</span>
+                <strong id="activeLicenses">0</strong>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- LOAD PARTITION -->
+    <section class="section">
+        <div class="section-title">
+            <h2>Load Partition</h2>
+            <p>Control service availability from the admin panel.</p>
+        </div>
+
+        <div class="admin-grid">
+
+            <div class="admin-card">
+                <h3>Triggered Anti Crack</h3>
+                <p>Enable or disable this service option.</p>
+
+                <label class="switch-row">
+                    <span id="antiCrackStatus">Disabled</span>
+                    <input type="checkbox" id="antiCrackToggle">
+                    <span class="switch"></span>
+                </label>
+            </div>
+
+            <div class="admin-card">
+                <h3>MDM Permanent</h3>
+                <p>Enable or disable this service option.</p>
+
+                <label class="switch-row">
+                    <span id="mdmStatus">Disabled</span>
+                    <input type="checkbox" id="mdmToggle">
+                    <span class="switch"></span>
+                </label>
+            </div>
+
+            <div class="admin-card">
+                <h3>Meta Mode</h3>
+                <p>Enable or disable this service option.</p>
+
+                <label class="switch-row">
+                    <span id="metaStatus">Disabled</span>
+                    <input type="checkbox" id="metaToggle">
+                    <span class="switch"></span>
+                </label>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CREDIT MANAGEMENT -->
+    <section class="section">
+        <div class="section-title">
+            <h2>Credit Management</h2>
+            <p>Add or remove credits from a customer account.</p>
+        </div>
+
+        <div class="admin-card">
+
+            <div class="input-group">
+                <label for="creditUid">Customer UID</label>
+                <input
+                    type="text"
+                    id="creditUid"
+                    placeholder="Enter customer UID"
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="creditAmount">Credit Amount</label>
+                <input
+                    type="number"
+                    id="creditAmount"
+                    min="1"
+                    placeholder="Example: 10"
+                >
+            </div>
+
+            <div class="button-row">
+                <button id="addCreditsBtn" class="btn btn-primary">
+                    Add Credits
+                </button>
+
+                <button id="removeCreditsBtn" class="btn btn-danger">
+                    Remove Credits
+                </button>
+            </div>
+
+            <p id="creditMessage" class="form-message"></p>
+        </div>
+    </section>
+
+    <!-- VOUCHERS -->
+    <section class="section">
+        <div class="section-title">
+            <h2>Voucher Management</h2>
+            <p>Create single-use credit vouchers.</p>
+        </div>
+
+        <div class="admin-card">
+
+            <div class="input-group">
+                <label for="voucherCode">Voucher Code</label>
+                <input
+                    type="text"
+                    id="voucherCode"
+                    placeholder="Example: YEKA-2026-001"
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="voucherCredits">Credits</label>
+                <input
+                    type="number"
+                    id="voucherCredits"
+                    min="1"
+                    placeholder="Example: 10"
+                >
+            </div>
+
+            <button id="createVoucherBtn" class="btn btn-primary">
+                Create Voucher
+            </button>
+
+            <p id="voucherMessage" class="form-message"></p>
+        </div>
+    </section>
+
+    <!-- RESELLERS -->
+    <section class="section">
+        <div class="section-title">
+            <h2>Resellers</h2>
+            <p>Current official Yeka Tool Pro resellers.</p>
+        </div>
+
+        <div class="admin-grid">
+
+            <div class="admin-card">
+                <h3>D_Geta47</h3>
+                <span class="status active">Active</span>
+            </div>
+
+            <div class="admin-card">
+                <h3>Eddy Tech</h3>
+                <span class="status active">Active</span>
+            </div>
+
+            <div class="admin-card">
+                <h3>Kongwe Tech</h3>
+                <span class="status active">Active</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- USERS TABLE -->
+    <section class="section">
+        <div class="section-title">
+            <h2>User Management</h2>
+            <p>Customer accounts currently stored in Firestore.</p>
+        </div>
+
+        <div class="admin-card table-container">
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Credits</th>
+                        <th>License</th>
+                        <th>Status</th>
+                        <th>UID</th>
+                    </tr>
+                </thead>
+
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="6">
+                            Loading users...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>
+            © 2026 Yeka Tool Pro · Yekah Tech Admin
+        </p>
+    </div>
+</footer>
+
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    setDoc,
+    updateDoc,
+    increment,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const $ = (id) => document.getElementById(id);
+
+let currentAdmin = null;
+
+
+/* =========================
+   AUTHENTICATION
+========================= */
+
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            await signOut(auth);
+            window.location.href = "login.html";
+            return;
+        }
+
+        const userData = userSnap.data();
+
+        if (userData.role !== "admin") {
+
+            alert("Access denied. Admin account required.");
+
+            await signOut(auth);
+
+            window.location.href = "dashboard.html";
+
+            return;
+        }
+
+        currentAdmin = user;
+
+        await loadUsers();
+        await loadSettings();
+
+    } catch (error) {
+
+        console.error("Admin authentication error:", error);
+
+        alert(
+            "Unable to verify admin access. Please check your Firebase connection and Firestore rules."
+        );
+
+    }
+
+});
+
+
+/* =========================
+   LOAD USERS
+========================= */
+
+async function loadUsers() {
+
+    const tbody = $("usersTableBody");
+
+    try {
+
+        const snapshot = await getDocs(
+            collection(db, "users")
+        );
+
+        let totalUsers = 0;
+        let activeUsers = 0;
+        let totalCredits = 0;
+        let activeLicenses = 0;
+
+        tbody.innerHTML = "";
+
+        snapshot.forEach((userDoc) => {
+
+            const data = userDoc.data();
+
+            totalUsers++;
+
+            if (data.accountStatus === "active") {
+                activeUsers++;
+            }
+
+            const credits =
+                Number(data.creditBalance || 0);
+
+            totalCredits += credits;
+
+            if (data.licenseStatus === "active") {
+                activeLicenses++;
+            }
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${escapeHTML(data.email || "-")}</td>
+
+                <td>
+                    <span class="status">
+                        ${escapeHTML(data.role || "customer")}
+                    </span>
+                </td>
+
+                <td>${credits}</td>
+
+                <td>
+                    <span class="status ${
+                        data.licenseStatus === "active"
+                            ? "active"
+                            : "inactive"
+                    }">
+                        ${escapeHTML(
+                            data.licenseStatus || "inactive"
+                        )}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="status ${
+                        data.accountStatus === "active"
+                            ? "active"
+                            : "inactive"
+                    }">
+                        ${escapeHTML(
+                            data.accountStatus || "unknown"
+                        )}
+                    </span>
+                </td>
+
+                <td class="uid-cell">
+                    ${escapeHTML(userDoc.id)}
+                </td>
+            `;
+
+            tbody.appendChild(row);
+
+        });
+
+        if (totalUsers === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        No users found.
+                    </td>
+                </tr>
+            `;
+
+        }
+
+        $("totalUsers").textContent = totalUsers;
+        $("activeUsers").textContent = activeUsers;
+        $("totalCredits").textContent = totalCredits;
+        $("activeLicenses").textContent = activeLicenses;
+
+    } catch (error) {
+
+        console.error("Load users error:", error);
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Failed to load users.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   CREDIT MANAGEMENT
+========================= */
+
+$("addCreditsBtn").addEventListener("click", async () => {
+
+    await changeCredits(1);
+
+});
+
+
+$("removeCreditsBtn").addEventListener("click", async () => {
+
+    await changeCredits(-1);
+
+});
+
+
+async function changeCredits(multiplier) {
+
+    const uid = $("creditUid").value.trim();
+
+    const amount =
+        Number($("creditAmount").value);
+
+    const message = $("creditMessage");
+
+    message.textContent = "";
+
+    if (!uid) {
+
+        message.textContent =
+            "Please enter customer UID.";
+
+        return;
+    }
+
+    if (!amount || amount <= 0) {
+
+        message.textContent =
+            "Please enter a valid credit amount.";
+
+        return;
+    }
+
+    try {
+
+        const userRef = doc(db, "users", uid);
+
+        const userSnap =
+            await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+
+            message.textContent =
+                "Customer account was not found.";
+
+            return;
+        }
+
+        const currentCredits =
+            Number(
+                userSnap.data().creditBalance || 0
+            );
+
+        if (
+            multiplier === -1 &&
+            currentCredits < amount
+        ) {
+
+            message.textContent =
+                "Customer does not have enough credits.";
+
+            return;
+        }
+
+        await updateDoc(userRef, {
+
+            creditBalance:
+                increment(amount * multiplier),
+
+            updatedAt:
+                serverTimestamp()
+
+        });
+
+        message.textContent =
+            multiplier === 1
+                ? "Credits added successfully."
+                : "Credits removed successfully.";
+
+        $("creditAmount").value = "";
+
+        await loadUsers();
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "Credit update failed.";
+
+    }
+
+}
+
+
+/* =========================
+   VOUCHER CREATION
+========================= */
+
+$("createVoucherBtn").addEventListener(
+    "click",
+    async () => {
+
+        const code =
+            $("voucherCode")
+                .value
+                .trim()
+                .toUpperCase();
+
+        const credits =
+            Number($("voucherCredits").value);
+
+        const message =
+            $("voucherMessage");
+
+        message.textContent = "";
+
+        if (!code) {
+
+            message.textContent =
+                "Enter a voucher code.";
+
+            return;
+        }
+
+        if (!credits || credits <= 0) {
+
+            message.textContent =
+                "Enter a valid credit amount.";
+
+            return;
+        }
+
+        try {
+
+            const voucherRef =
+                doc(db, "vouchers", code);
+
+            const existing =
+                await getDoc(voucherRef);
+
+            if (existing.exists()) {
+
+                message.textContent =
+                    "This voucher already exists.";
+
+                return;
+            }
+
+            await setDoc(voucherRef, {
+
+                code: code,
+
+                credits: credits,
+
+                used: false,
+
+                usedBy: null,
+
+                createdBy:
+                    currentAdmin.uid,
+
+                createdAt:
+                    serverTimestamp(),
+
+                usedAt: null
+
+            });
+
+            message.textContent =
+                "Voucher created successfully.";
+
+            $("voucherCode").value = "";
+            $("voucherCredits").value = "";
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.textContent =
+                "Failed to create voucher.";
+
+        }
+
+    }
+);
+
+
+/* =========================
+   SERVICE SETTINGS
+========================= */
+
+async function loadSettings() {
+
+    try {
+
+        const settingsRef =
+            doc(db, "settings", "services");
+
+        const settingsSnap =
+            await getDoc(settingsRef);
+
+        if (!settingsSnap.exists()) {
+
+            await setDoc(settingsRef, {
+
+                antiCrack: false,
+                mdmPermanent: false,
+                metaMode: false,
+
+                updatedAt:
+                    serverTimestamp()
+
+            });
+
+            return;
+
+        }
+
+        const data =
+            settingsSnap.data();
+
+        setToggle(
+            "antiCrackToggle",
+            "antiCrackStatus",
+            Boolean(data.antiCrack)
+        );
+
+        setToggle(
+            "mdmToggle",
+            "mdmStatus",
+            Boolean(data.mdmPermanent)
+        );
+
+        setToggle(
+            "metaToggle",
+            "metaStatus",
+            Boolean(data.metaMode)
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Settings loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+function setToggle(
+    toggleId,
+    statusId,
+    value
+) {
+
+    const toggle =
+        $(toggleId);
+
+    const status =
+        $(statusId);
+
+    toggle.checked = value;
+
+    status.textContent =
+        value
+            ? "Enabled"
+            : "Disabled";
+
+}
+
+
+async function updateServiceSetting(
+    field,
+    toggleId,
+    statusId
+) {
+
+    const enabled =
+        $(toggleId).checked;
+
+    try {
+
+        await setDoc(
+            doc(db, "settings", "services"),
+            {
+
+                [field]: enabled,
+
+                updatedAt:
+                    serverTimestamp(),
+
+                updatedBy:
+                    currentAdmin.uid
+
+            },
+            { merge: true }
+        );
+
+        $(statusId).textContent =
+            enabled
+                ? "Enabled"
+                : "Disabled";
+
+    } catch (error) {
+
+        console.error(error);
+
+        $(toggleId).checked =
+            !enabled;
+
+        alert(
+            "Failed to update service setting."
+        );
+
+    }
+
+}
+
+
+$("antiCrackToggle")
+    .addEventListener(
+        "change",
+        () =>
+            updateServiceSetting(
+                "antiCrack",
+                "antiCrackToggle",
+                "antiCrackStatus"
+            )
+    );
+
+
+$("mdmToggle")
+    .addEventListener(
+        "change",
+        () =>
+            updateServiceSetting(
+                "mdmPermanent",
+                "mdmToggle",
+                "mdmStatus"
+            )
+    );
+
+
+$("metaToggle")
+    .addEventListener(
+        "change",
+        () =>
+            updateServiceSetting(
+                "metaMode",
+                "metaToggle",
+                "metaStatus"
+            )
+    );
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+$("logoutBtn").addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            await signOut(auth);
+
+            window.location.href =
+                "login.html";
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Logout failed."
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================
+   BASIC HTML ESCAPE
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+</script>
+
+</body>
+</html>
