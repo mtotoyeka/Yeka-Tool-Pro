@@ -1,1 +1,271 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Yeka Tool Pro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="auth-page">
+
+    <div class="auth-card">
+
+      <h1>Yeka Tool Pro</h1>
+      <p class="auth-subtitle">Login to your account</p>
+
+      <form id="loginForm">
+
+        <div class="input-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            required
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+        </div>
+
+        <div class="auth-options">
+          <a href="forgot-password.html">
+            Forgot Password?
+          </a>
+        </div>
+
+        <button type="submit" id="loginBtn">
+          Login
+        </button>
+
+        <p id="loginMessage" class="auth-message"></p>
+
+      </form>
+
+      <p class="auth-footer">
+        Don't have an account?
+        <a href="register.html">Create Account</a>
+      </p>
+
+    </div>
+
+  </main>
+
+
+  <script type="module">
+
+    import { auth, db } from "./firebase.js";
+
+    import {
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+    import {
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+    const loginForm =
+      document.getElementById("loginForm");
+
+    const loginBtn =
+      document.getElementById("loginBtn");
+
+    const loginMessage =
+      document.getElementById("loginMessage");
+
+
+    function showMessage(message, type = "") {
+
+      loginMessage.textContent = message;
+
+      loginMessage.className =
+        "auth-message " + type;
+
+    }
+
+
+    loginForm.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+
+      loginBtn.disabled = true;
+
+      loginBtn.textContent = "Signing in...";
+
+      showMessage("Signing in...", "loading");
+
+
+      try {
+
+        // Firebase Authentication
+        const userCredential =
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+
+        const user =
+          userCredential.user;
+
+
+        // Get user information from Firestore
+        const userDoc =
+          await getDoc(
+            doc(db, "users", user.uid)
+          );
+
+
+        if (!userDoc.exists()) {
+
+          showMessage(
+            "Your account profile was not found.",
+            "error"
+          );
+
+          await auth.signOut();
+
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+
+          return;
+        }
+
+
+        const userData =
+          userDoc.data();
+
+
+        // Check account status
+        if (
+          userData.accountStatus &&
+          userData.accountStatus !== "active"
+        ) {
+
+          showMessage(
+            "Your account is currently inactive.",
+            "error"
+          );
+
+          await auth.signOut();
+
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+
+          return;
+        }
+
+
+        showMessage(
+          "Login successful! Redirecting...",
+          "success"
+        );
+
+
+        // Admin → Admin Control Center
+        if (userData.role === "admin") {
+
+          setTimeout(() => {
+            window.location.href = "admin.html";
+          }, 800);
+
+        }
+
+        // Customer → Customer Dashboard
+        else {
+
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 800);
+
+        }
+
+
+      } catch (error) {
+
+        console.error("Login error:", error);
+
+
+        let message =
+          "Login failed. Please try again.";
+
+
+        switch (error.code) {
+
+          case "auth/invalid-credential":
+            message =
+              "Incorrect email or password.";
+            break;
+
+          case "auth/user-not-found":
+            message =
+              "No account was found with this email.";
+            break;
+
+          case "auth/wrong-password":
+            message =
+              "Incorrect password.";
+            break;
+
+          case "auth/invalid-email":
+            message =
+              "Please enter a valid email address.";
+            break;
+
+          case "auth/too-many-requests":
+            message =
+              "Too many login attempts. Please try again later.";
+            break;
+
+          case "auth/network-request-failed":
+            message =
+              "Network error. Check your internet connection.";
+            break;
+
+          default:
+            message =
+              error.message || message;
+
+        }
+
+
+        showMessage(message, "error");
+
+
+        loginBtn.disabled = false;
+
+        loginBtn.textContent = "Login";
+
+      }
+
+    });
+
+  </script>
+
+</body>
+</html>
