@@ -1,1 +1,606 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard - Yeka Tool Pro</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="dashboard-page">
+
+    <!-- HEADER -->
+
+    <header class="site-header">
+
+      <div class="container navbar">
+
+        <a href="index.html" class="logo">
+          <span class="logo-dot"></span>
+          Yeka Tool Pro
+        </a>
+
+        <div class="nav-actions">
+
+          <button
+            type="button"
+            id="refreshBtn"
+            class="btn nav-btn"
+          >
+            Refresh
+          </button>
+
+          <button
+            type="button"
+            id="logoutBtn"
+            class="btn nav-btn"
+          >
+            Logout
+          </button>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- MAIN -->
+
+    <main class="container">
+
+      <section class="dashboard-header">
+
+        <p class="text-cyan">
+          CUSTOMER DASHBOARD
+        </p>
+
+        <h1>
+          Welcome,
+          <span id="userName">Loading...</span>
+        </h1>
+
+        <p id="userEmail">
+          Loading account...
+        </p>
+
+      </section>
+
+
+      <!-- ACCOUNT STATS -->
+
+      <section class="dashboard-grid">
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            CREDIT BALANCE
+          </div>
+
+          <div
+            class="stat-value"
+            id="creditBalance"
+          >
+            0
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            LICENSE STATUS
+          </div>
+
+          <div
+            class="stat-value"
+            id="licenseStatus"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            ACCOUNT STATUS
+          </div>
+
+          <div
+            class="stat-value"
+            id="accountStatus"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            ACCOUNT TYPE
+          </div>
+
+          <div
+            class="stat-value"
+            id="accountRole"
+          >
+            Customer
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ACCOUNT INFORMATION -->
+
+      <section class="section">
+
+        <div class="card">
+
+          <div class="section-header">
+
+            <h2>
+              Account Information
+            </h2>
+
+            <p>
+              Your Yeka Tool Pro account information.
+            </p>
+
+          </div>
+
+
+          <div class="input-group">
+
+            <label>
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              id="profileName"
+              readonly
+            >
+
+          </div>
+
+
+          <div class="input-group">
+
+            <label>
+              Email Address
+            </label>
+
+            <input
+              type="email"
+              id="profileEmail"
+              readonly
+            >
+
+          </div>
+
+
+          <div class="input-group">
+
+            <label>
+              User ID
+            </label>
+
+            <input
+              type="text"
+              id="profileUid"
+              readonly
+            >
+
+          </div>
+
+
+          <div class="input-group">
+
+            <label>
+              License
+            </label>
+
+            <input
+              type="text"
+              id="profileLicense"
+              readonly
+            >
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- SUPPORT -->
+
+      <section class="section">
+
+        <div class="card">
+
+          <div class="section-header">
+
+            <h2>
+              Need Credits?
+            </h2>
+
+            <p>
+              Contact Yekah Tech to purchase or recharge
+              your Yeka Tool Pro credits.
+            </p>
+
+          </div>
+
+
+          <div class="hero-actions">
+
+            <a
+              href="https://wa.me/255612021997"
+              target="_blank"
+              rel="noopener"
+              class="btn"
+            >
+              Contact WhatsApp
+            </a>
+
+
+            <a
+              href="index.html#resellers"
+              class="btn btn-secondary"
+            >
+              View Resellers
+            </a>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+
+      <div class="container footer-content">
+
+        <p>
+          © 2026 Yeka Tool Pro
+        </p>
+
+        <p>
+          Yekah Tech
+        </p>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+
+  <!-- FIREBASE -->
+
+  <script type="module">
+
+    import {
+      auth,
+      db
+    } from "./firebase.js";
+
+
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+    import {
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+    const userName =
+      document.getElementById("userName");
+
+    const userEmail =
+      document.getElementById("userEmail");
+
+    const creditBalance =
+      document.getElementById("creditBalance");
+
+    const licenseStatus =
+      document.getElementById("licenseStatus");
+
+    const accountStatus =
+      document.getElementById("accountStatus");
+
+    const accountRole =
+      document.getElementById("accountRole");
+
+    const profileName =
+      document.getElementById("profileName");
+
+    const profileEmail =
+      document.getElementById("profileEmail");
+
+    const profileUid =
+      document.getElementById("profileUid");
+
+    const profileLicense =
+      document.getElementById("profileLicense");
+
+    const logoutBtn =
+      document.getElementById("logoutBtn");
+
+    const refreshBtn =
+      document.getElementById("refreshBtn");
+
+
+    let currentUser = null;
+
+
+    async function loadUserData(user) {
+
+      if (!user) {
+        return;
+      }
+
+
+      try {
+
+        const userRef =
+          doc(db, "users", user.uid);
+
+
+        const userSnapshot =
+          await getDoc(userRef);
+
+
+        if (!userSnapshot.exists()) {
+
+          userName.textContent =
+            user.displayName || "Customer";
+
+          userEmail.textContent =
+            user.email || "";
+
+          creditBalance.textContent =
+            "0";
+
+          licenseStatus.textContent =
+            "Inactive";
+
+          accountStatus.textContent =
+            "Unknown";
+
+          return;
+
+        }
+
+
+        const data =
+          userSnapshot.data();
+
+
+        const name =
+          data.name ||
+          user.displayName ||
+          "Customer";
+
+
+        const email =
+          data.email ||
+          user.email ||
+          "";
+
+
+        const credits =
+          Number(data.creditBalance || 0);
+
+
+        const license =
+          data.licenseStatus ||
+          "inactive";
+
+
+        const status =
+          data.accountStatus ||
+          "active";
+
+
+        const role =
+          data.role ||
+          "customer";
+
+
+        // HEADER
+
+        userName.textContent =
+          name;
+
+        userEmail.textContent =
+          email;
+
+
+        // STATS
+
+        creditBalance.textContent =
+          credits;
+
+
+        licenseStatus.textContent =
+          formatStatus(license);
+
+
+        accountStatus.textContent =
+          formatStatus(status);
+
+
+        accountRole.textContent =
+          formatStatus(role);
+
+
+        // PROFILE
+
+        profileName.value =
+          name;
+
+        profileEmail.value =
+          email;
+
+        profileUid.value =
+          user.uid;
+
+        profileLicense.value =
+          formatStatus(license);
+
+
+      } catch (error) {
+
+        console.error(
+          "Failed to load account:",
+          error
+        );
+
+        userName.textContent =
+          "Unable to load";
+
+        userEmail.textContent =
+          "Please refresh the page.";
+
+      }
+
+    }
+
+
+    function formatStatus(value) {
+
+      if (!value) {
+        return "—";
+      }
+
+
+      return String(value)
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, letter =>
+          letter.toUpperCase()
+        );
+
+    }
+
+
+    // CHECK AUTHENTICATION
+
+    onAuthStateChanged(
+      auth,
+      async (user) => {
+
+        if (!user) {
+
+          window.location.href =
+            "login.html";
+
+          return;
+
+        }
+
+
+        currentUser = user;
+
+        await loadUserData(user);
+
+      }
+    );
+
+
+    // REFRESH
+
+    refreshBtn.addEventListener(
+      "click",
+      async () => {
+
+        if (!currentUser) {
+          return;
+        }
+
+
+        refreshBtn.disabled = true;
+
+        refreshBtn.textContent =
+          "Refreshing...";
+
+
+        await loadUserData(
+          currentUser
+        );
+
+
+        refreshBtn.disabled = false;
+
+        refreshBtn.textContent =
+          "Refresh";
+
+      }
+    );
+
+
+    // LOGOUT
+
+    logoutBtn.addEventListener(
+      "click",
+      async () => {
+
+        try {
+
+          logoutBtn.disabled = true;
+
+          logoutBtn.textContent =
+            "Logging out...";
+
+
+          await signOut(auth);
+
+
+          window.location.href =
+            "login.html";
+
+
+        } catch (error) {
+
+          console.error(
+            "Logout error:",
+            error
+          );
+
+
+          logoutBtn.disabled = false;
+
+          logoutBtn.textContent =
+            "Logout";
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
